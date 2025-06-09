@@ -1,14 +1,27 @@
-import { useEffect } from 'react';
-import { pingServer } from './services/api';
+
+import Login from "./pages/Auth/Login";
+import Signup from "./pages/Auth/Signup";
+import Dashboard from "./pages/Dashboard";
+import PrivateRoute from "./components/PrivateRoute";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+
 
 function App() {
-  useEffect(() => {
-    pingServer().then(res => console.log(res.data));
-  }, []);
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <h1 className="text-3xl font-bold text-blue-600">Activity Analyzer</h1>
-    </div>
+    <Router>
+<Routes>
+  <Route path="/" element={<Navigate to="/login" replace />} />
+  <Route path="/login" element={<Login />} />
+  <Route path="/signup" element={<Signup />} />
+  <Route path="/dashboard" element={
+    <PrivateRoute>
+      <Dashboard />
+    </PrivateRoute>
+  } />
+</Routes>
+
+    </Router>
   );
 }
+
+export default App;
