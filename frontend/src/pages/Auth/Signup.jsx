@@ -1,22 +1,77 @@
 import { useState } from 'react';
 import axios from 'axios';
+import { useNavigate, Link } from 'react-router-dom';
 
 export default function Signup() {
   const [form, setForm] = useState({ name: '', email: '', password: '' });
-const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+  const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-  const res = await axios.post(`${BASE_URL}/auth/signup`, form);
-    localStorage.setItem('token', res.data.token);
-    alert('Signup successful!');
+    setError('');
+    try {
+      const res = await axios.post(`${BASE_URL}/auth/signup`, form);
+      localStorage.setItem('token', res.data.token);
+      alert('Signup successful!');
+      navigate('/dashboard');
+    } catch (err) {
+      setError(err.response?.data?.message || 'Signup failed');
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="p-4">
-      <input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder="Name" />
-      <input value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} placeholder="Email" />
-      <input type="password" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} placeholder="Password" />
-      <button type="submit">Sign Up</button>
-    </form>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 px-4">
+      <div className="bg-white p-8 rounded shadow-md w-full max-w-md">
+        <h2 className="text-3xl font-semibold mb-6 text-center">Sign Up</h2>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <input
+            type="text"
+            name="name"
+            value={form.name}
+            onChange={handleChange}
+            placeholder="Name"
+            required
+            className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <input
+            type="email"
+            name="email"
+            value={form.email}
+            onChange={handleChange}
+            placeholder="Email"
+            required
+            className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <input
+            type="password"
+            name="password"
+            value={form.password}
+            onChange={handleChange}
+            placeholder="Password"
+            required
+            className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          {error && <p className="text-red-500 text-sm">{error}</p>}
+          <button
+            type="submit"
+            className="w-full bg-blue-600 text-white p-3 rounded hover:bg-blue-700 transition"
+          >
+            Sign Up
+          </button>
+        </form>
+        <p className="mt-4 text-center text-gray-600">
+          Already have an account?{' '}
+          <Link to="/login" className="text-blue-600 hover:underline">
+            Login
+          </Link>
+        </p>
+      </div>
+    </div>
   );
 }
