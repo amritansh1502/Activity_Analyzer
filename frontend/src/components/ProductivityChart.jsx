@@ -23,17 +23,19 @@ ChartJS.register(
 
 const ProductivityChart = ({ data }) => {
   const chartData = {
-    labels: data.map(item => item.date),
+    labels: data.map((item) => item.date),
     datasets: [
       {
         label: 'Productivity Score',
-        data: data.map(item => item.score),
+        data: data.map((item) => item.productivityScore),
         fill: false,
         borderColor: 'rgb(75, 192, 192)',
         tension: 0.1,
       },
     ],
   };
+
+  console.log('ProductivityChart data:', chartData);
 
   const options = {
     responsive: true,
@@ -48,7 +50,7 @@ const ProductivityChart = ({ data }) => {
     },
   };
 
-  return <Line data={chartData} options={options} />;
+  return <div style={{ height: '300px' }}><Line data={chartData} options={options} /></div>;
 };
 
 export default ProductivityChart;

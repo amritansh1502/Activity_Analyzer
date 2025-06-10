@@ -1,3 +1,5 @@
+
+
 const express = require('express');
 const router = express.Router();
 const Activity = require('../models/Activity');
@@ -21,12 +23,17 @@ router.post('/log', authMiddleware, async (req, res) => {
     const userId = req.user.id;
     const events = Array.isArray(req.body) ? req.body : [req.body];
 
-    const activities = events.map(event => ({
-      userId,
-      eventType: event.eventType,
-      timestamp: event.timestamp ? new Date(event.timestamp) : new Date(),
-      duration: event.duration || 0,
-    }));
+    console.log('Received activity events:', events);
+
+    const activities = events.map(event => {
+      console.log('Event duration:', event.duration);
+      return {
+        userId,
+        eventType: event.eventType,
+        timestamp: event.timestamp ? new Date(event.timestamp) : new Date(),
+        duration: event.duration || 0,
+      };
+    });
 
     await Activity.insertMany(activities);
 
@@ -47,6 +54,8 @@ router.post('/log', authMiddleware, async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+
+module.exports = { router, setSocketIO };
 
 // Get activity logs for authenticated user
 router.get('/', authMiddleware, async (req, res) => {

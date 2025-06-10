@@ -17,7 +17,7 @@ router.get('/insights', authMiddleware, async (req, res) => {
     const userId = req.user.id;
 
     // Aggregate activity data for the user
-    const activities = await Activity.find({ user: userId });
+    const activities = await Activity.find({ userId: userId });
 
     // Calculate metrics
     let totalActiveTime = 0;
@@ -25,29 +25,71 @@ router.get('/insights', authMiddleware, async (req, res) => {
     let distractedTime = 0;
     let focusSessionCount = 0;
     let distractionCount = 0;
-    const websiteUsage = {};
+
+    // For daily trend aggregation
+    const dailyDataMap = new Map();
 
     activities.forEach((activity) => {
-      totalActiveTime += activity.duration || 0;
+      const durationMinutes = (activity.duration || 0) / 60000; // convert ms to minutes
+      totalActiveTime += durationMinutes;
       if (activity.eventType === 'focus') {
-        focusedTime += activity.duration || 0;
+        focusedTime += durationMinutes;
         focusSessionCount += 1;
       } else if (activity.eventType === 'distraction') {
-        distractedTime += activity.duration || 0;
+        distractedTime += durationMinutes;
         distractionCount += 1;
       }
-      if (activity.domain) {
-        websiteUsage[activity.domain] = (websiteUsage[activity.domain] || 0) + (activity.duration || 0);
+
+      // Aggregate daily data
+      const dateObj = new Date(activity.timestamp);
+      const year = dateObj.getFullYear();
+      const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+      const day = String(dateObj.getDate()).padStart(2, '0');
+      const dateKey = `${year}-${month}-${day}`;
+      if (!dailyDataMap.has(dateKey)) {
+        dailyDataMap.set(dateKey, { focusedTime: 0, distractedTime: 0 });
       }
+      const dayData = dailyDataMap.get(dateKey);
+      if (activity.eventType === 'focus') {
+        dayData.focusedTime += durationMinutes;
+      } else if (activity.eventType === 'distraction') {
+        dayData.distractedTime += durationMinutes;
+      }
+    });
+
+    // Prepare dailyActivityTrend array
+    const dailyActivityTrend = Array.from(dailyDataMap.entries()).map(([date, data]) => {
+      const productivityScore = calculateProductivityScore(data);
+      return {
+        date,
+        focusedTime: data.focusedTime,
+        distractedTime: data.distractedTime,
+        productivityScore,
+      };
     });
 
     const productivityScore = calculateProductivityScore({ focusedTime, distractedTime });
 
-    // Prepare top websites list
-    const topWebsites = Object.entries(websiteUsage)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 5)
-      .map(([domain, duration]) => ({ domain, duration }));
+    // Aggregate top websites usage
+    const websiteUsageMap = new Map();
+
+    activities.forEach((activity) => {
+      if (activity.websiteUrl) {
+        if (!websiteUsageMap.has(activity.websiteUrl)) {
+          websiteUsageMap.set(activity.websiteUrl, 0);
+        }
+        websiteUsageMap.set(activity.websiteUrl, websiteUsageMap.get(activity.websiteUrl) + (activity.duration || 0));
+      }
+    });
+
+    // Convert to array and sort by duration descending
+    const topWebsites = Array.from(websiteUsageMap.entries())
+      .map(([websiteUrl, durationMs]) => ({
+        websiteUrl,
+        durationMinutes: durationMs / 60000,
+      }))
+      .sort((a, b) => b.durationMinutes - a.durationMinutes)
+      .slice(0, 10); // top 10 websites
 
     res.json({
       totalActiveTime,
@@ -57,6 +99,7 @@ router.get('/insights', authMiddleware, async (req, res) => {
       distractionCount,
       productivityScore,
       topWebsites,
+      dailyActivityTrend,
     });
   } catch (err) {
     console.error('Profile insights error:', err);

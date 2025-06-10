@@ -14,19 +14,33 @@ const Profile = () => {
   useEffect(() => {
     const fetchInsights = async () => {
       try {
-        const response = await api.get('/profile/insights');
+        const response = await api.get('/api/profile/insights');
+        console.log('Profile insights response:', response.data);
+        console.log('Top Websites:', response.data.topWebsites);
         setInsights(response.data);
       } catch (err) {
+        console.error('Error loading profile insights:', err);
         setError('Failed to load profile insights');
       } finally {
         setLoading(false);
       }
     };
     fetchInsights();
+
+    // Add interval to refresh insights every 30 seconds
+    const intervalId = setInterval(fetchInsights, 30000);
+
+    return () => clearInterval(intervalId);
   }, []);
 
   if (loading) return <div>Loading profile...</div>;
   if (error) return <div>{error}</div>;
+
+  if (!insights) return <div>No profile insights available.</div>;
+
+  console.log('Daily Activity Trend:', JSON.stringify(insights.dailyActivityTrend, null, 2));
+  console.log('Focused Time:', insights.focusedTime);
+  console.log('Distracted Time:', insights.distractedTime);
 
   return (
     <div className="p-6">
@@ -36,9 +50,9 @@ const Profile = () => {
         productivityScore={insights.productivityScore}
       />
       <div className="grid grid-cols-2 gap-4 mt-6">
-        <StatCard title="Total Active Time" value={`${(insights.totalActiveTime / 60).toFixed(1)} mins`} />
-        <StatCard title="Focused Time" value={`${(insights.focusedTime / 60).toFixed(1)} mins`} />
-        <StatCard title="Distracted Time" value={`${(insights.distractedTime / 60).toFixed(1)} mins`} />
+        <StatCard title="Total Active Time" value={`${insights.totalActiveTime.toFixed(1)} mins`} />
+        <StatCard title="Focused Time" value={`${insights.focusedTime.toFixed(1)} mins`} />
+        <StatCard title="Distracted Time" value={`${insights.distractedTime.toFixed(1)} mins`} />
         <StatCard title="Focus Sessions" value={insights.focusSessionCount} />
       </div>
       <div className="mt-6">
