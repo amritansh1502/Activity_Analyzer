@@ -85,10 +85,10 @@ router.get('/insights', authMiddleware, async (req, res) => {
     // Convert to array and sort by duration descending
     const topWebsites = Array.from(websiteUsageMap.entries())
       .map(([websiteUrl, durationMs]) => ({
-        websiteUrl,
-        durationMinutes: durationMs / 60000,
+        domain: websiteUrl,
+        duration: durationMs / 60_000,
       }))
-      .sort((a, b) => b.durationMinutes - a.durationMinutes)
+      .sort((a, b) => b.duration - a.duration)
       .slice(0, 10); // top 10 websites
 
     res.json({

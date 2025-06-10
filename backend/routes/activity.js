@@ -32,6 +32,7 @@ router.post('/log', authMiddleware, async (req, res) => {
         eventType: event.eventType,
         timestamp: event.timestamp ? new Date(event.timestamp) : new Date(),
         duration: event.duration || 0,
+        websiteUrl: event.websiteUrl || null,
       };
     });
 

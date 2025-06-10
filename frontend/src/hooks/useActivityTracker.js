@@ -90,6 +90,28 @@ const useActivityTracker = (userToken) => {
     }, 30000); // Reduced idle threshold to 30 seconds for better responsiveness
   };
 
+  // Define startFocus and endFocus functions
+  const startFocus = () => {
+    if (!isFocused.current) {
+      isFocused.current = true;
+      focusStartTime.current = Date.now();
+    }
+  };
+
+  const endFocus = () => {
+    if (isFocused.current && focusStartTime.current) {
+      const focusDuration = Date.now() - focusStartTime.current;
+      logActivity({
+        eventType: 'focus',
+        duration: focusDuration,
+        timestamp: new Date().toISOString(),
+        websiteUrl: currentWebsite.current,
+      });
+      isFocused.current = false;
+      focusStartTime.current = null;
+    }
+  };
+
   useEffect(() => {
     if (!userToken) return;
 
