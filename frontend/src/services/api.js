@@ -1,9 +1,13 @@
 import axios from 'axios';
 
-const baseURL = process.env.VITE_API_BASE_URL || 'http://localhost:8000';
+let baseURL = process.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
+
+if (!baseURL.endsWith('/api')) {
+  baseURL = baseURL.endsWith('/') ? baseURL + 'api' : baseURL + '/api';
+}
 
 const API = axios.create({
-  baseURL: baseURL.endsWith('/') ? baseURL + 'api' : baseURL + '/api',
+  baseURL: baseURL,
 });
 
 // Add a request interceptor to include auth token in headers
