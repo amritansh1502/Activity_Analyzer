@@ -4,7 +4,7 @@ import StatCard from '../components/StatCard';
 import ProductivityChart from '../components/ProductivityChart';
 import WebsiteUsageTable from '../components/WebsiteUsageTable';
 import DistractionAlert from '../components/DistractionAlert';
-import api from '../services/api';
+import API from '../services/api';
 
 const Profile = () => {
   const [insights, setInsights] = useState(null);
@@ -14,7 +14,7 @@ const Profile = () => {
   useEffect(() => {
     const fetchInsights = async () => {
       try {
-        const response = await api.get('/api/profile/insights');
+        const response = await API.get('/profile/insights');
         console.log('Profile insights response:', response.data);
         console.log('Top Websites:', response.data.topWebsites);
         setInsights(response.data);

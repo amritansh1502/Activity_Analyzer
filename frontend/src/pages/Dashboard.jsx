@@ -5,7 +5,7 @@ import ActivityLog from "../components/ActivityLog";
 import ActivityTimeChart from "../components/ActivityTimeChart";
 import FocusGauge from "../components/FocusGauge";
 import LiveActivityFeed from "../components/LiveActivityFeed";
-import axios from "axios";
+import API from "../services/api";
 
 const Dashboard = () => {
   const [userToken, setUserToken] = useState(null);
@@ -25,11 +25,7 @@ const Dashboard = () => {
 
     const fetchActivities = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/activity`, {
-          headers: {
-            Authorization: `Bearer ${userToken}`,
-          },
-        });
+        const response = await API.get('/activity');
         setActivities(response.data.activities);
         console.log(response.data.activities);
       } catch (error) {
