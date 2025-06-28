@@ -1,12 +1,11 @@
 import { useState } from 'react';
-import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
+import API from  '../../services/api'; // Adjust the path to your API service
 
 export default function Signup() {
   const [form, setForm] = useState({ name: '', email: '', password: '' });
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -16,7 +15,7 @@ export default function Signup() {
     e.preventDefault();
     setError('');
     try {
-      const res = await axios.post(`${BASE_URL}/auth/signup`, form);
+      const res = await API.post('/auth/signup', form); 
       localStorage.setItem('token', res.data.token);
       alert('Signup successful!');
       navigate('/dashboard');

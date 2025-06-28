@@ -1,12 +1,11 @@
 import { useState } from "react";
-import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
+import API from  '../../services/api';  // 🔁 Make sure this path points to your actual api.js
 
 export default function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -17,7 +16,7 @@ export default function Login() {
     setError("");
 
     try {
-      const res = await axios.post(`${BASE_URL}/auth/login`, form);
+      const res = await API.post('/auth/login', form); // ✅ Uses centralized API with /api base path
       localStorage.setItem("token", res.data.token);
       alert("Login successful!");
       navigate("/dashboard"); // protected route
