@@ -11,6 +11,8 @@ if (!baseURL) {
 const API = axios.create({
   baseURL: baseURL,
 });
+console.log('API baseURL:', baseURL);
+
 
 // Add a request interceptor to include auth token in headers
 API.interceptors.request.use(
