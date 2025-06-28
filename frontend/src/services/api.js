@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-let baseURL = process.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
+let baseURL = process.env.VITE_API_BASE_URL ;
 
 if (!baseURL.endsWith('/api')) {
   baseURL = baseURL.endsWith('/') ? baseURL + 'api' : baseURL + '/api';
