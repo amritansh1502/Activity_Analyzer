@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const baseURL = process.env.VITE_BACKEND_URL || 'http://localhost:8000';
+const baseURL = process.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
 const API = axios.create({
   baseURL: baseURL.endsWith('/') ? baseURL + 'api' : baseURL + '/api',
