@@ -25,9 +25,8 @@ const useActivityTracker = (userToken) => {
   const sendBatch = async (batch) => {
     if (batch.length === 0) return;
     try {
-      await API.post(`/activity/log`, batch, {
+      await API.post("/activity/log", batch, {
         headers: {
-          Authorization: `Bearer ${userToken}`,
           'Content-Type': 'application/json',
         },
       });
