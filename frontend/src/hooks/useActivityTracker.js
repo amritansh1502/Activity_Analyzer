@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import axios from 'axios';
+import API from '../services/api';
 
 const useActivityTracker = (userToken) => {
   const [activityCounts, setActivityCounts] = useState({
@@ -25,7 +25,7 @@ const useActivityTracker = (userToken) => {
   const sendBatch = async (batch) => {
     if (batch.length === 0) return;
     try {
-      await axios.post(`${import.meta.env.VITE_API_BASE_URL}/activity/log`, batch, {
+      await API.post(`/activity/log`, batch, {
         headers: {
           Authorization: `Bearer ${userToken}`,
           'Content-Type': 'application/json',
@@ -49,7 +49,7 @@ const useActivityTracker = (userToken) => {
   const sendRemainingEvents = () => {
     if (eventBuffer.current.length === 0) return;
     const payload = JSON.stringify(eventBuffer.current);
-    const url = `${import.meta.env.VITE_API_BASE_URL}/activity/log`;
+    const url = `${import.meta.env.VITE_API_BASE_URL}/api/activity/log`;
     if (navigator.sendBeacon) {
       const blob = new Blob([payload], { type: 'application/json' });
       navigator.sendBeacon(url, blob);
