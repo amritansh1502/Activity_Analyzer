@@ -5,6 +5,7 @@ import ActivityLog from "../components/ActivityLog";
 import ActivityTimeChart from "../components/ActivityTimeChart";
 import FocusGauge from "../components/FocusGauge";
 import LiveActivityFeed from "../components/LiveActivityFeed";
+import WebsiteUsageTable from "../components/WebsiteUsageTable";
 import API from "../services/api";
 
 const Dashboard = () => {
@@ -40,6 +41,28 @@ const Dashboard = () => {
     return () => clearInterval(intervalId);
   }, [userToken]);
 
+  // Aggregate website visits by domain and sum durations
+  const aggregateWebsites = () => {
+    const websiteMap = new Map();
+
+    activities.forEach(activity => {
+      if (activity.eventType === 'website_visit' && activity.websiteUrl) {
+        const domain = activity.websiteUrl;
+        const prevDuration = websiteMap.get(domain) || 0;
+        websiteMap.set(domain, prevDuration + (activity.duration || 0));
+      }
+    });
+
+    // Convert map to array and sort by duration descending
+    const sortedWebsites = Array.from(websiteMap.entries())
+      .map(([domain, duration]) => ({ domain, duration }))
+      .sort((a, b) => b.duration - a.duration);
+
+    return sortedWebsites.slice(0, 10); // top 10 websites
+  };
+
+  const topWebsites = aggregateWebsites();
+
   // Format idle time in seconds
   const idleSeconds = Math.floor(idleTime / 1000);
 
@@ -62,6 +85,7 @@ const Dashboard = () => {
       <FocusGauge score={score} />
       <ActivityTimeChart activities={activities} />
       <ActivityLog activities={activities} />
+      <WebsiteUsageTable websites={topWebsites} />
       <LiveActivityFeed />
     </DashboardLayout>
   );
