@@ -17,6 +17,8 @@ const Profile = () => {
         const response = await API.get('/profile/insights');
         console.log('Profile insights response:', response.data);
         console.log('Top Websites:', response.data.topWebsites);
+        // console.log(response.data.avatar)
+        // console.log(response.data.avatarUrl)
         setInsights(response.data);
       } catch (err) {
         console.error('Error loading profile insights:', err);
@@ -45,8 +47,8 @@ const Profile = () => {
   return (
     <div className="p-6">
       <ProfileCard
-        name="User Name"
-        avatarUrl="/path/to/avatar.jpg"
+        name={insights.name || "User Name"}
+        avatarUrl={insights.avatar ? `${import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000'}/${insights.avatar}` : "/default-avatar.png"}
         productivityScore={insights.productivityScore}
       />
       <div className="grid grid-cols-2 gap-4 mt-6">

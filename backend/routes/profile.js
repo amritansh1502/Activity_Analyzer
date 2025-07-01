@@ -11,10 +11,14 @@ function calculateProductivityScore(stats) {
   return (focusedTime / (focusedTime + distractedTime)) * 100;
 }
 
-// GET /api/profile/insights
+const User = require('../models/User');
+
 router.get('/insights', authMiddleware, async (req, res) => {
   try {
     const userId = req.user.id;
+
+    // Fetch user info
+    const user = await User.findById(userId).select('name avatar');
 
     // Aggregate activity data for the user
     const activities = await Activity.find({ userId: userId });
@@ -92,6 +96,8 @@ router.get('/insights', authMiddleware, async (req, res) => {
       .slice(0, 10); // top 10 websites
 
     res.json({
+      name: user.name,
+      avatar: user.avatar,
       totalActiveTime,
       focusedTime,
       distractedTime,
@@ -101,6 +107,8 @@ router.get('/insights', authMiddleware, async (req, res) => {
       topWebsites,
       dailyActivityTrend,
     });
+
+    
   } catch (err) {
     console.error('Profile insights error:', err);
     res.status(500).json({ message: 'Server error' });

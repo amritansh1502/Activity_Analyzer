@@ -16,6 +16,9 @@ const io = new Server(server, {
 app.use(cors());
 app.use(express.json());
 
+// Serve static files from uploads directory
+app.use('/uploads', express.static('uploads'));
+
 // Health check route
 app.get('/', (req, res) => res.send('Backend running'));
 

@@ -4,6 +4,8 @@ import API from  '../../services/api'; // Adjust the path to your API service
 
 export default function Signup() {
   const [form, setForm] = useState({ name: '', email: '', password: '' });
+  const [avatar, setAvatar] = useState(null);
+   const [avatarPreview, setAvatarPreview] = useState(null);
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
@@ -11,11 +13,37 @@ export default function Signup() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const handleAvatarChange = (e) => {
+    const file = e.target.files[0];
+    setAvatar(file);
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setAvatarPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setAvatarPreview(null);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     try {
-      const res = await API.post('/auth/signup', form); 
+      const formData = new FormData();
+      formData.append('name', form.name);
+      formData.append('email', form.email);
+      formData.append('password', form.password);
+      if (avatar) {
+        formData.append('avatar', avatar);
+      }
+
+      const res = await API.post('/auth/signup', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
       localStorage.setItem('token', res.data.token);
       alert('Signup successful!');
       navigate('/dashboard');
@@ -28,7 +56,7 @@ export default function Signup() {
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 px-4">
       <div className="bg-white p-8 rounded shadow-md w-full max-w-md">
         <h2 className="text-3xl font-semibold mb-6 text-center">Sign Up</h2>
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6" encType="multipart/form-data">
           <input
             type="text"
             name="name"
@@ -56,6 +84,29 @@ export default function Signup() {
             required
             className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
+          <div>
+            <label
+              htmlFor="avatar-upload"
+              className="cursor-pointer inline-block w-full text-center bg-black text-white p-3 rounded "
+            >
+              Choose Avatar
+            </label>
+            <input
+              id="avatar-upload"
+              type="file"
+              name="avatar"
+              accept="image/*"
+              onChange={handleAvatarChange}
+              className="hidden"
+            />
+            {avatarPreview && (
+              <img
+                src={avatarPreview}
+                alt="Avatar Preview"
+                className="mt-4 mx-auto w-24 h-24 object-cover rounded-full border border-gray-300"
+              />
+            )}
+          </div>
           {error && <p className="text-red-500 text-sm">{error}</p>}
           <button
             type="submit"
@@ -68,6 +119,11 @@ export default function Signup() {
           Already have an account?{' '}
           <Link to="/login" className="text-blue-600 hover:underline">
             Login
+          </Link>
+        </p>
+        <p className="mt-4 text-center text-gray-600">
+          <Link to="/" className="text-blue-600 hover:underline">
+            Back to Home
           </Link>
         </p>
       </div>

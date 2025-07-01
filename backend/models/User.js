@@ -5,9 +5,10 @@ const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, unique: true, required: true },
   password: { type: String, required: true },
+  avatar: { type: String, default: '' }, // Added avatar field to store image path or URL
 }, { timestamps: true });
 
-// Hash password before saving
+
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
   // Check if password is already hashed (bcrypt hashes start with $2b$ and length 60)

@@ -2,20 +2,41 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const multer = require("multer");
+const path = require("path");
 const User = require("../models/User.js");
 
-// Signup route
+const fs = require('fs');
 
-router.post("/signup", async (req, res) => {
+
+// Multer setup for avatar uploads
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const dir = "uploads/avatars/";
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    cb(null, dir);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1E9);
+    cb(null, uniqueSuffix + path.extname(file.originalname));
+  }
+});
+const upload = multer({ storage: storage });
+
+// Signup route with avatar upload
+router.post("/signup", upload.single("avatar"), async (req, res) => {
   try {
     const { name, email, password } = req.body;
+    const avatar = req.file ? req.file.path : "";
 
     // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) return res.status(400).json({ message: "User already exists" });
 
     // Create user
-    const user = new User({ name, email, password });
+    const user = new User({ name, email, password, avatar });
     await user.save();
 
     // Generate token

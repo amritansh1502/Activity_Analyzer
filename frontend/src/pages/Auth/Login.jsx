@@ -62,6 +62,11 @@ export default function Login() {
             Sign up
           </Link>
         </p>
+         <p className="mt-4 text-center text-gray-600">
+          <Link to="/" className="text-blue-600 hover:underline">
+            Back to Home
+          </Link>
+          </p>
       </div>
     </div>
   );
