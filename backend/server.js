@@ -13,12 +13,7 @@ const io = new Server(server, {
   },
 });
 
-// const corsOptions = {
-//   origin: ['https://focusly-an-activity-analyzer.onrender.com', 'http://localhost:5173', 'chrome-extension://*'], // Added localhost:5173 for frontend dev server
-//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-//   allowedHeaders: ['Content-Type', 'Authorization'],
-//   credentials: true,
-// };
+
 
 app.use(cors());
 app.use(express.json());

@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const bcrypt = require("bcryptjs");
+// const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const multer = require("multer");
 const path = require("path");
@@ -60,8 +60,8 @@ router.post("/login", async (req, res) => {
     if (!user) return res.status(401).json({ message: "Invalid credentials" });
 
     // Compare passwords
-    console.log(user.password);
-    console.log(password);
+    // console.log(user.password);
+    // console.log(password);
     
     const isMatch = await user.comparePassword(password);
     console.log("Incoming login for:", email);

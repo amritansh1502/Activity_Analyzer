@@ -1,39 +1,25 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import ProfileCard from '../components/ProfileCard';
 import StatCard from '../components/StatCard';
 import ProductivityChart from '../components/ProductivityChart';
 import WebsiteUsageTable from '../components/WebsiteUsageTable';
 import DistractionAlert from '../components/DistractionAlert';
-import API from '../services/api';
+import { fetchProfile } from '../store/slices/profileSlice';
 
 const Profile = () => {
-  const [insights, setInsights] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const dispatch = useDispatch();
+  const { profile: insights, loading, error } = useSelector((state) => state.profile);
 
   useEffect(() => {
-    const fetchInsights = async () => {
-      try {
-        const response = await API.get('/profile/insights');
-        console.log('Profile insights response:', response.data);
-        console.log('Top Websites:', response.data.topWebsites);
-        // console.log(response.data.avatar)
-        // console.log(response.data.avatarUrl)
-        setInsights(response.data);
-      } catch (err) {
-        console.error('Error loading profile insights:', err);
-        setError('Failed to load profile insights');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchInsights();
+    dispatch(fetchProfile());
 
-    // Add interval to refresh insights every 30 seconds
-    const intervalId = setInterval(fetchInsights, 30000);
+    const intervalId = setInterval(() => {
+      dispatch(fetchProfile());
+    }, 30000);
 
     return () => clearInterval(intervalId);
-  }, []);
+  }, [dispatch]);
 
   if (loading) return <div>Loading profile...</div>;
   if (error) return <div>{error}</div>;

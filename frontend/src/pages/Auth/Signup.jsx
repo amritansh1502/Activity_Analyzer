@@ -1,13 +1,16 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import API from  '../../services/api'; // Adjust the path to your API service
+import { useDispatch, useSelector } from 'react-redux';
+import { loginStart, loginSuccess, loginFailure } from '../../store/slices/authSlice';
 
 export default function Signup() {
   const [form, setForm] = useState({ name: '', email: '', password: '' });
   const [avatar, setAvatar] = useState(null);
-   const [avatarPreview, setAvatarPreview] = useState(null);
-  const [error, setError] = useState('');
+  const [avatarPreview, setAvatarPreview] = useState(null);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const error = useSelector((state) => state.auth.error);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -29,7 +32,7 @@ export default function Signup() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    dispatch(loginStart());
     try {
       const formData = new FormData();
       formData.append('name', form.name);
@@ -45,10 +48,11 @@ export default function Signup() {
         },
       });
       localStorage.setItem('token', res.data.token);
+      dispatch(loginSuccess(res.data.token));
       alert('Signup successful!');
       navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.message || 'Signup failed');
+      dispatch(loginFailure(err.response?.data?.message || 'Signup failed'));
     }
   };
 

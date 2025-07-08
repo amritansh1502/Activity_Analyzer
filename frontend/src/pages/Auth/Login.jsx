@@ -1,11 +1,14 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import API from  '../../services/api';  // 🔁 Make sure this path points to your actual api.js
+import { useDispatch, useSelector } from 'react-redux';
+import { loginStart, loginSuccess, loginFailure } from '../../store/slices/authSlice';
 
 export default function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
-  const [error, setError] = useState("");
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const error = useSelector((state) => state.auth.error);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -13,15 +16,16 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
+    dispatch(loginStart());
 
     try {
       const res = await API.post('/auth/login', form); // ✅ Uses centralized API with /api base path
       localStorage.setItem("token", res.data.token);
+      dispatch(loginSuccess(res.data.token));
       alert("Login successful!");
       navigate("/dashboard"); // protected route
     } catch (err) {
-      setError(err.response?.data?.message || "Login failed");
+      dispatch(loginFailure(err.response?.data?.message || "Login failed"));
     }
   };
 

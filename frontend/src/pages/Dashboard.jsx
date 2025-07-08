@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import DashboardLayout from "../layouts/DashboardLayout";
 import useActivityTracker from "../hooks/useActivityTracker";
 import ActivityLog from "../components/ActivityLog";
@@ -6,11 +7,12 @@ import ActivityTimeChart from "../components/ActivityTimeChart";
 import FocusGauge from "../components/FocusGauge";
 import LiveActivityFeed from "../components/LiveActivityFeed";
 import WebsiteUsageTable from "../components/WebsiteUsageTable";
-import API from "../services/api";
+import { fetchActivities } from "../store/slices/activitySlice";
 
 const Dashboard = () => {
+  const dispatch = useDispatch();
+  const { activities, loading, error } = useSelector((state) => state.activity);
   const [userToken, setUserToken] = useState(null);
-  const [activities, setActivities] = useState([]);
 
   useEffect(() => {
     // Assuming token is stored in localStorage after login
@@ -20,33 +22,24 @@ const Dashboard = () => {
 
   const { clicks, scrolls, idleTime, tabSwitches, keyPresses } = useActivityTracker(userToken);
 
-  // Fetch activity logs from backend periodically
   useEffect(() => {
     if (!userToken) return;
 
-    const fetchActivities = async () => {
-      try {
-        const response = await API.get('/activity');
-        setActivities(response.data.activities);
-        console.log(response.data.activities);
-      } catch (error) {
-        console.error("Failed to fetch activities:", error);
-      }
-    };
+    dispatch(fetchActivities());
 
-    fetchActivities();
-
-    const intervalId = setInterval(fetchActivities, 60000); // fetch every 60 seconds
+    const intervalId = setInterval(() => {
+      dispatch(fetchActivities());
+    }, 60000);
 
     return () => clearInterval(intervalId);
-  }, [userToken]);
+  }, [dispatch, userToken]);
 
   // Aggregate website visits by domain and sum durations
   const aggregateWebsites = () => {
     const websiteMap = new Map();
 
-    activities.forEach(activity => {
-      if (activity.eventType === 'website_visit' && activity.websiteUrl) {
+    activities.forEach((activity) => {
+      if (activity.eventType === "website_visit" && activity.websiteUrl) {
         const domain = activity.websiteUrl;
         const prevDuration = websiteMap.get(domain) || 0;
         websiteMap.set(domain, prevDuration + (activity.duration || 0));
@@ -68,7 +61,10 @@ const Dashboard = () => {
 
   // Calculate focus/productivity score (simple heuristic)
   const totalActivity = clicks + scrolls + tabSwitches + idleSeconds;
-  const score = totalActivity > 0 ? Math.max(0, Math.min(100, Math.floor(100 - (idleSeconds / totalActivity) * 100))) : 100;
+  const score =
+    totalActivity > 0
+      ? Math.max(0, Math.min(100, Math.floor(100 - (idleSeconds / totalActivity) * 100)))
+      : 100;
 
   return (
     <DashboardLayout>
