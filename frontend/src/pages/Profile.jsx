@@ -1,11 +1,4 @@
-import React, { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import ProfileCard from '../components/ProfileCard';
-import StatCard from '../components/StatCard';
-import ProductivityChart from '../components/ProductivityChart';
-import WebsiteUsageTable from '../components/WebsiteUsageTable';
-import DistractionAlert from '../components/DistractionAlert';
-import { fetchProfile } from '../store/slices/profileSlice';
+
 
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';

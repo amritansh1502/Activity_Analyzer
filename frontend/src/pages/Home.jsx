@@ -1,3 +1,5 @@
+
+
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import StatCard from "../components/StatCard";
@@ -108,3 +110,4 @@ const Home = () => {
   );
 };
 
+export default Home;

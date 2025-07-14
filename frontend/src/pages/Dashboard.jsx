@@ -1,13 +1,4 @@
-import { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import DashboardLayout from "../layouts/DashboardLayout";
-import useActivityTracker from "../hooks/useActivityTracker";
-import ActivityLog from "../components/ActivityLog";
-import ActivityTimeChart from "../components/ActivityTimeChart";
-import FocusGauge from "../components/FocusGauge";
-import LiveActivityFeed from "../components/LiveActivityFeed";
-import WebsiteUsageTable from "../components/WebsiteUsageTable";
-import { fetchActivities } from "../store/slices/activitySlice";
+
 
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
