@@ -4,7 +4,17 @@ import API from  '../../services/api'; // Adjust the path to your API service
 import { useDispatch, useSelector } from 'react-redux';
 import { loginStart, loginSuccess, loginFailure } from '../../store/slices/authSlice';
 
+import { useState, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import API from  '../../services/api'; // Adjust the path to your API service
+import { useDispatch, useSelector } from 'react-redux';
+import { loginStart, loginSuccess, loginFailure } from '../../store/slices/authSlice';
+
 export default function Signup() {
+  useEffect(() => {
+    document.title = "ActivityAnalyzer - Signup";
+  }, []);
+
   const [form, setForm] = useState({ name: '', email: '', password: '' });
   const [avatar, setAvatar] = useState(null);
   const [avatarPreview, setAvatarPreview] = useState(null);

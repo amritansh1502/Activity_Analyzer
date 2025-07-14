@@ -1,9 +1,13 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import StatCard from '../components/StatCard';
-import logo from '../assets/aiease_1749573410644.jpg';
+import React, { useEffect } from "react";
+import { Link } from "react-router-dom";
+import StatCard from "../components/StatCard";
+import logo from "../assets/aiease_1749573410644.jpg";
 
 const Home = () => {
+  useEffect(() => {
+    document.title = "ActivityAnalyzer - Home";
+  }, []);
+
   return (
     <div className="min-h-screen flex flex-col">
       {/* Navbar */}
@@ -104,4 +108,3 @@ const Home = () => {
   );
 };
 
-export default Home;

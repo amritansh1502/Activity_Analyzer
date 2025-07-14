@@ -4,7 +4,17 @@ import API from  '../../services/api';  // 🔁 Make sure this path points to yo
 import { useDispatch, useSelector } from 'react-redux';
 import { loginStart, loginSuccess, loginFailure } from '../../store/slices/authSlice';
 
+import { useState, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import API from  '../../services/api';  // 🔁 Make sure this path points to your actual api.js
+import { useDispatch, useSelector } from 'react-redux';
+import { loginStart, loginSuccess, loginFailure } from '../../store/slices/authSlice';
+
 export default function Login() {
+  useEffect(() => {
+    document.title = "ActivityAnalyzer - Login";
+  }, []);
+
   const [form, setForm] = useState({ email: "", password: "" });
   const dispatch = useDispatch();
   const navigate = useNavigate();
