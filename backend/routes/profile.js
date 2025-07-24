@@ -3,9 +3,9 @@ const router = express.Router();
 const Activity = require('../models/Activity');
 const authMiddleware = require('../middleware/auth');
 
-// Helper function to calculate productivity score
+
 function calculateProductivityScore(stats) {
-  // Simple example: score = focusedTime / (focusedTime + distractedTime)
+
   const { focusedTime = 0, distractedTime = 0 } = stats;
   if (focusedTime + distractedTime === 0) return 0;
   return (focusedTime / (focusedTime + distractedTime)) * 100;

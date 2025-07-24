@@ -9,7 +9,7 @@ const User = require("../models/User.js");
 const fs = require('fs');
 
 
-// Multer setup for avatar uploads
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     const dir = "uploads/avatars/";
@@ -46,7 +46,7 @@ router.post("/signup", upload.single("avatar"), async (req, res) => {
 
     res.status(201).json({ message: "User created", token });
   } catch (err) {
-    console.error("Signup error:", err); // ✅ This will log the actual backend error
+    console.error("Signup error:", err); 
     res.status(500).json({ message: "Server error" });
   }
 });
@@ -55,7 +55,7 @@ router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Check if user exists
+
     const user = await User.findOne({ email });
     if (!user) return res.status(401).json({ message: "Invalid credentials" });
 
