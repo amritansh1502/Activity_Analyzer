@@ -15,6 +15,7 @@ const Profile = () => {
   }, []);
 
   const dispatch = useDispatch();
+  
   const { profile: insights, loading, error } = useSelector((state) => state.profile);
 
   useEffect(() => {

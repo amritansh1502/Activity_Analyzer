@@ -16,21 +16,27 @@ const authSlice = createSlice({
       state.error = null;
     },
     loginSuccess(state, action) {
+
       state.loading = false;
       state.isAuthenticated = true;
       state.token = action.payload;
       state.error = null;
+
     },
     loginFailure(state, action) {
+
       state.loading = false;
       state.error = action.payload;
+
     },
     logout(state) {
+
       state.token = null;
       state.isAuthenticated = false;
       state.loading = false;
       state.error = null;
       localStorage.removeItem('token');
+      
     },
   },
 });
