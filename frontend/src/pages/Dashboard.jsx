@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import DashboardLayout from "../layouts/DashboardLayout";
 import useActivityTracker from "../hooks/useActivityTracker";
-import ActivityLog from "../components/ActivityLog";
+
 import ActivityTimeChart from "../components/ActivityTimeChart";
 import FocusGauge from "../components/FocusGauge";
 import LiveActivityFeed from "../components/LiveActivityFeed";
@@ -86,7 +86,6 @@ const Dashboard = () => {
 
       <FocusGauge score={score} />
       <ActivityTimeChart activities={activities} />
-      <ActivityLog activities={activities} />
       <WebsiteUsageTable websites={topWebsites} />
       <LiveActivityFeed />
     </DashboardLayout>
