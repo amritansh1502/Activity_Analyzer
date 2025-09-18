@@ -1,7 +1,30 @@
 import { useEffect, useRef, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { logout } from '../store/slices/authSlice';
 import API from '../services/api';
 
+// Throttle function to limit the rate of function calls
+const throttle = (func, delay) => {
+  let timeoutId;
+  let lastExecTime = 0;
+  return function (...args) {
+    const currentTime = Date.now();
+    if (currentTime - lastExecTime > delay) {
+      func.apply(this, args);
+      lastExecTime = currentTime;
+    } else {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        func.apply(this, args);
+        lastExecTime = Date.now();
+      }, delay - (currentTime - lastExecTime));
+    }
+  };
+};
+
+
 const useActivityTracker = (userToken) => {
+  const dispatch = useDispatch();
   const [activityCounts, setActivityCounts] = useState({
     clicks: 0,
     scrolls: 0,
@@ -86,7 +109,11 @@ const useActivityTracker = (userToken) => {
           websiteUrl: currentWebsite.current,
         });
       }
-    }, 30000); // Reduced idle threshold to 30 seconds for better responsiveness
+      // Auto logout if idle time exceeds 1 minute (60000 ms)
+      if (idleDuration > 60000) {
+        dispatch(logout());
+      }
+    }, 60000); // Set idle threshold to 60 seconds for auto logout
   };
 
   // Define startFocus and endFocus functions
@@ -179,7 +206,7 @@ const useActivityTracker = (userToken) => {
       startFocus();
     };
 
-    const handleScroll = () => {
+    const handleScroll = throttle(() => {
       setActivityCounts((prev) => ({ ...prev, scrolls: prev.scrolls + 1 }));
       logActivity({
         eventType: 'scroll',
@@ -190,7 +217,7 @@ const useActivityTracker = (userToken) => {
       lastActivityTime.current = Date.now();
       resetIdleTimer();
       startFocus();
-    };
+    }, 500);
 
     const handleKeyDown = () => {
       setActivityCounts((prev) => ({ ...prev, keyPresses: prev.keyPresses + 1 }));
